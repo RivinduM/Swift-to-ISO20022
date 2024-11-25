@@ -1,0 +1,33 @@
+[package]
+org = "rivindumadushan"
+name = "Swift_to_ISO20022"
+version = "0.1.0"
+distribution = "2201.10.1"
+
+[build-options]
+observabilityIncluded = true
+
+[[dependency]]
+org = "ballerinax"
+name = "financial.iso20022"
+version = "1.0.1"
+
+[[dependency]]
+org = "ballerinax"
+name = "financial.swiftmt"
+version = "1.0.0"
+
+
+[[dependency]]
+org = "ballerinax"
+name = "financial.swift.mt"
+version = "1.0.1"
+
+[[dependency]]
+org = "ballerinax"
+name = "financial.swiftmtToIso20022"
+version = "0.9.0"
+repository="local"
+
+[ballerina.log]
+level = "DEBUG"

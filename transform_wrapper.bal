@@ -1,6 +1,7 @@
 import ballerina/log;
 import ballerina/regex;
-import ballerinax/financial.swiftmtToIso20022 as mtToMx;
+// import ballerinax/financial.swiftmtToIso20022 as mtToMx;
+import Swift_to_ISO20022.mtmx as mtToMx;
 import ballerinax/financial.swift.mt as swiftmt;
 import ballerinax/financial.iso20022.payment_initiation as painIsoRecord;
 import ballerinax/financial.iso20022.payments_clearing_and_settlement as pacsIsoRecord;
@@ -31,11 +32,11 @@ function transformMxToMt(xml isoMessage, string targetType) returns string|error
     }
 
     string conversionType = isotype + "_" + targetType;
-    if (!transformFunctionMap.hasKey(conversionType)) {
+    if (!mxToMtTransformFunctionMap.hasKey(conversionType)) {
         log:printError("Unsupported message transformation", mxMessage = isotype, mtMessage = targetType);
         return "Unsupported message transformation";
     }
-    isolated function func = transformFunctionMap.get(conversionType);
+    isolated function func = mxToMtTransformFunctionMap.get(conversionType);
     record{} isoRecord = check function:call(func, check swiftmx:fromIso20022(isoMessage, isoRecordMap.get(isotype))).ensureType();
     response = check swiftmt:getFinMessage(isoRecord);
     log:printDebug(string `Transformed MT message`, transformedMessage = response);
@@ -43,7 +44,7 @@ function transformMxToMt(xml isoMessage, string targetType) returns string|error
 }
 
 
-final readonly & map<isolated function> transformFunctionMap = {
+final readonly & map<isolated function> mxToMtTransformFunctionMap = {
     "pain.001_MT101": transformPain001DocumentToMT101,
     "pacs.008_MT103": transformPacs008DocumentToMT103,
     "camt.057_MT210": transformCamt057ToMt210

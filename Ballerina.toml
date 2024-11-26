@@ -23,11 +23,11 @@ org = "ballerinax"
 name = "financial.swift.mt"
 version = "1.0.1"
 
-[[dependency]]
-org = "ballerinax"
-name = "financial.swiftmtToIso20022"
-version = "0.9.0"
-repository="local"
+# [[dependency]]
+# org = "ballerinax"
+# name = "financial.swiftmtToIso20022"
+# version = "0.9.0"
+# repository="local"
 
 [ballerina.log]
 level = "DEBUG"

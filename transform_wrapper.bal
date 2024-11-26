@@ -1,4 +1,5 @@
 import ballerina/log;
+import ballerina/regex;
 import ballerinax/financial.swiftmtToIso20022 as mtToMx;
 import ballerinax/financial.swift.mt as swiftmt;
 import ballerinax/financial.iso20022.payment_initiation as painIsoRecord;
@@ -24,27 +25,32 @@ function transformMxToMt(xml isoMessage, string targetType) returns string|error
     string isotype = "";
     string response = "Unsupported message type";
     if isoMessage is xml:Element {
-        isotype = isoMessage.getAttributes().get("{http://www.w3.org/2000/xmlns/}xmlns");
+        string namespace = isoMessage.getAttributes().get("{http://www.w3.org/2000/xmlns/}xmlns");
+        string[] messageType = regex:split(namespace, "xsd:");
+        isotype = messageType[1].substring(0, 8);
     }
-    if (isotype.includes("pain.001") && targetType == "MT101") {
-        log:printDebug("Transforming Pain001 to MT101");
-        painIsoRecord:Pain001Document pain001Message = 
-            <painIsoRecord:Pain001Document>(check swiftmx:fromIso20022(isoMessage, painIsoRecord:Pain001Document));
-        swiftmt:MT101Message mt101Message = check transformPain001DocumentToMT101(pain001Message);
-        response = check swiftmt:getFinMessage(mt101Message);
-    } else if (isotype.includes("pacs.008") && targetType == "MT103") {
-        log:printDebug("Transforming Pacs008 to MT103");
-        pacsIsoRecord:Pacs008Document pacs008Message = 
-            <pacsIsoRecord:Pacs008Document>(check swiftmx:fromIso20022(isoMessage, pacsIsoRecord:Pacs008Document));
-        swiftmt:MT103Message mt103Message = check transformPacs008DocumentToMT103(pacs008Message);
-        response = check swiftmt:getFinMessage(mt103Message);
-    } else if (isotype.includes("camt.057") && targetType == "MT210") {
-        log:printDebug("Transforming Camt057 to MT210");
-        camtIsoRecord:Camt057Document camt057Message = 
-            <camtIsoRecord:Camt057Document>(check swiftmx:fromIso20022(isoMessage, camtIsoRecord:Camt057Document));
-        swiftmt:MT210Message mt210Message = check transformCamt057ToMt210(camt057Message);
-        response = check swiftmt:getFinMessage(mt210Message);
+
+    string conversionType = isotype + "_" + targetType;
+    if (!transformFunctionMap.hasKey(conversionType)) {
+        log:printError("Unsupported message transformation", mxMessage = isotype, mtMessage = targetType);
+        return "Unsupported message transformation";
     }
+    isolated function func = transformFunctionMap.get(conversionType);
+    record{} isoRecord = check function:call(func, check swiftmx:fromIso20022(isoMessage, isoRecordMap.get(isotype))).ensureType();
+    response = check swiftmt:getFinMessage(isoRecord);
     log:printDebug(string `Transformed MT message`, transformedMessage = response);
     return response;
 }
+
+
+final readonly & map<isolated function> transformFunctionMap = {
+    "pain.001_MT101": transformPain001DocumentToMT101,
+    "pacs.008_MT103": transformPacs008DocumentToMT103,
+    "camt.057_MT210": transformCamt057ToMt210
+};
+
+final readonly & map<typedesc<record {}>> isoRecordMap = {
+    "pain.001": painIsoRecord:Pain001Document,
+    "pacs.008": pacsIsoRecord:Pacs008Document,
+    "camt.057": camtIsoRecord:Camt057Document
+};

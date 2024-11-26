@@ -319,7 +319,7 @@ enum MT103Type {
 #
 # + document - The PACS008 document
 # + return - The MT103 message or an error if the transformation fails
-function transformPacs008DocumentToMT103(pacsIsoRecord:Pacs008Document document) returns swiftmt:MT103Message|error => {
+isolated function transformPacs008DocumentToMT103(pacsIsoRecord:Pacs008Document document) returns swiftmt:MT103Message|error => {
 
     block1: check createMtBlock1FromSupplementaryData(document.FIToFICstmrCdtTrf.SplmtryData),
     block2: check createMtBlock2FromSupplementaryData("103", document.FIToFICstmrCdtTrf.SplmtryData),
@@ -332,7 +332,7 @@ function transformPacs008DocumentToMT103(pacsIsoRecord:Pacs008Document document)
 #
 # + document - The PACS008 document
 # + return - The MT103STP message or an error if the transformation fails
-function transformPacs008DocumentToMT103STP(pacsIsoRecord:Pacs008Document document) returns swiftmt:MT103STPMessage|error => {
+isolated function transformPacs008DocumentToMT103STP(pacsIsoRecord:Pacs008Document document) returns swiftmt:MT103STPMessage|error => {
 
     block1: check createMtBlock1FromSupplementaryData(document.FIToFICstmrCdtTrf.SplmtryData),
     block2: check createMtBlock2FromSupplementaryData("103STP", document.FIToFICstmrCdtTrf.SplmtryData),

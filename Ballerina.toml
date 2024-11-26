@@ -1,7 +1,7 @@
 [package]
 org = "rivindumadushan"
 name = "Swift_to_ISO20022"
-version = "0.1.0"
+version = "0.1.1"
 distribution = "2201.10.1"
 
 [build-options]

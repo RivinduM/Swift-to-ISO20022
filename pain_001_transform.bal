@@ -21,7 +21,7 @@ import ballerinax/financial.swift.mt as swiftmt;
 #
 # + document - The Pain001 document
 # + return - The MT101 message or an error if the transformation fails
-function transformPain001DocumentToMT101(painIsoRecord:Pain001Document document) returns swiftmt:MT101Message|error => let swiftmt:MT50C?|swiftmt:MT50L? instructingParty = getMT101InstructingPartyFromPain001Document(document), swiftmt:MT50F?|swiftmt:MT50G?|swiftmt:MT50H? orderingCustomer = getMT101OrderingCustomerFromPain001Document(document), swiftmt:MT52A?|swiftmt:MT52C? accountServicingInstitution = getMT101AccountServicingInstitutionFromPain001Document(document) in {
+isolated function transformPain001DocumentToMT101(painIsoRecord:Pain001Document document) returns swiftmt:MT101Message|error => let swiftmt:MT50C?|swiftmt:MT50L? instructingParty = getMT101InstructingPartyFromPain001Document(document), swiftmt:MT50F?|swiftmt:MT50G?|swiftmt:MT50H? orderingCustomer = getMT101OrderingCustomerFromPain001Document(document), swiftmt:MT52A?|swiftmt:MT52C? accountServicingInstitution = getMT101AccountServicingInstitutionFromPain001Document(document) in {
         block1: check createMtBlock1FromSupplementaryData(document.CstmrCdtTrfInitn.SplmtryData),
         block2: {
             'type: "input",

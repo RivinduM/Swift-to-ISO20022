@@ -14,7 +14,7 @@ function transformMtToMx(string swiftMessage) returns xml {
     xml|error transformedMsg = mtToMx:toIso20022Xml(swiftMessage);
     if transformedMsg is error {
         log:printError("Error while transforming MT message", err = transformedMsg.toBalString());
-        return xml `<error>Error while transforming MT message</error>`;
+        return xml `<error>Unsupported message transformation</error>`;
     }
     log:printDebug(string `Transformed ISO 20022 XML`, transformedMessage = transformedMsg.toString());
     return transformedMsg;

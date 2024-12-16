@@ -14,13 +14,25 @@
 // specific language governing permissions and limitations
 // under the License.
 
-import ballerina/lang.runtime;
+import ballerina/io;
+import ballerina/ftp;
 
-public function main() returns error? {
-    // Attach the service to the listener along with the resource path.
-    check httpListener.attach(mtmxRestService, "/");
-    // Start the listener.
-    check httpListener.'start();
-    // Register the listener dynamically.
-    runtime:registerListener(httpListener);
+ftp:Client fileClient = check new ({
+        host: ftpHost,
+        auth: {
+            credentials: {
+                username: username,
+                password: password
+            }
+        },
+        port: ftpPort
+    });
+
+    
+function sendFile(string fileName) returns error? {
+
+    stream<io:Block, io:Error?> fileStream
+            = check io:fileReadBlocksAsStream("./test-inputs/" + fileName, 1024);
+    check fileClient->put(protocol.SFTP.ftpDirectory + fileName, fileStream);
+    check fileStream.close();
 }
